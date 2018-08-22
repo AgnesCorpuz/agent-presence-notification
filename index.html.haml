@@ -1,0 +1,72 @@
+.tutorial{:data =>{:title=>'Get Notified when members of a Group change Presence and Routing Status'}}
+    .step{:data=>{:title=>'Introduction'}}
+        :markdown
+			This tutorial walks through the steps of implementing a function to subscribe and listen to changes on a group members' presence and/or routing status.
+			
+			Go here for more information about [Presence and Routing Status](https://developer.mypurecloud.com/api/rest/v2/presence/understanding_presence.html):
+            
+			For this tutorial, we are going to use the PureCloud SDK.
+	.step{:data=>{:title=>'Input'}}
+        :markdown
+			For this tutorial, we're going to obtain the credentials through a simple console input.
+			
+			We'll also ask for the Group Name to determine which group we're going to request the members from.
+	.step{:data=>{:title=>'Configure SDK Settings'}}
+        :markdown
+			Next, we're going to configure our SDK setting by providing an access token which we'll use in processing our API calls.
+			
+			To obtain a token, we create a separate function to request it from PureCloud.
+    .step{:data=>{:title=>'Obtain an Access Token'}}
+        :markdown
+            Start by making a POST call to https://login.mypurecloud.com/oauth/token to request a token.
+            
+			Some SDKs will include helper functions to obtain the token using the Client ID and Client Secret, while on other SDKs, the HTTP Request and Response needs to be manually handled to obtain the token.
+			
+			For this tutorial, we'll be using Client Credentials Grant Type as we won't need any user context in acquiring the desired information.
+			
+			More information about OAuth and Authorization could be found in the [documentation](https://developer.mypurecloud.com/api/rest/authorization/)
+	.step{:data=>{:title=>'Instantiate APIs'}}
+        :markdown
+			We'll create an instance of Groups API and pass it to our methods that will request for the group's information.
+			
+			To get the group members, we'll create 2 separate functions:
+			* Search for the Group ID using the group name.
+			* Get all members of the group using the Group ID.
+	
+	.step{:data=>{:title=>'Get Group ID'}}
+        :markdown
+            Before we can get the group members we'll need to first get the Group ID if it's not yet known.
+			
+			Here we create a search function that will search for all groups in the organization using the Group Name as the search criteria. 
+			
+			The function should return the Group ID which we will then use in requesting the group's members.
+    .step{:data=>{:title=>'Read Agent Group'}}
+        :markdown
+			Create a function that will allow us to fetch all members inside a group and store it in a collection.
+			
+			NOTE: The number of members returned will be limited by the pageSize parameter and depending on the number of actual members of the group, there may be a need to do multiple calls to acquire all members.
+			
+			For this tutorial, we'll be using the default value 25, as our pageSize value.
+	.step{:data=>{:title=>'Build the notification handler'}}
+        :markdown
+            The SDKs include a NotificationHandler class to assist with managing PureCloud notifications.
+			
+			There are a few differences between the SDKs on subscribing to different topics. Consult the particular SDK's documentation for specific help with the class.
+			
+			In this tutorial we will be using this class as our handler for events.
+	.step{:data=>{:title=>'Subscribe the notification handler to the presence of group members'}}
+        :markdown
+            We'll once again call a function which will make the NotificationHandler subscribe to the members' statuses.
+	.step{:data=>{:title=>'Subscribe to the Members' Presence and Routing Status Changes'}}
+        :markdown
+            We'll loop through our collection of members to subscribe our handler to each user's presence and routing status changes.
+			
+			Note that we have a limit of 1000 subscriptions per socket connection. This means that for this example, we have a hard limit of 500 members since we're subscribing to both their presence and routing status changes.
+			
+			For more information consult the [Notifications Page](https://developer.mypurecloud.com/api/rest/v2/notifications/notification_service.html).
+			
+			We're also going to define the action as simply displaying the Event Body to the console whenever a user's status changes.
+	.step{:data=>{:title=>'Display to confirm websocket client is listening'}}
+        :markdown
+            Finally, we're going to display a 'confirmation' message in our main function to determine that everything was set-up properly and no errors were raised.
+			
